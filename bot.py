@@ -1370,7 +1370,7 @@ def process_queue(state: dict, queue: PriorityQueue):
             now_str = datetime.now(timezone.utc).strftime("%d.%m.%Y %H:%M UTC")
             text = text.replace("Час: 20.", f"Час: {now_str}")
             text = text.replace("**", "")
-        image = make_market_chart(d["market"], d["fg"]) if text else None
+            image = make_market_chart(d["market"], d["fg"]) if text else None
         if text and publish(text, build_hashtags(event), image):
             state["seen_news"].append(d["news_hash"])
             mark_posted(state, "news", is_critical, is_high)
