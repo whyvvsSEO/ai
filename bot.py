@@ -14,7 +14,7 @@ AI Crypto Hunter v4
   • "Портфель китів" — що накопичують великі гравці
 """
 
-import os, io, json, time, logging, hashlib, heapq, threading
+import os, io, json, time, logging, hashlib, heapq, threading, re
 import requests
 import matplotlib
 matplotlib.use("Agg")
@@ -25,6 +25,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+def md_to_html(text: str) -> str:
+    text = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', text)
+    text = re.sub(r'\*(.+?)\*', r'<i>\1</i>', text)
+    text = re.sub(r'`(.+?)`', r'<code>\1</code>', text)
+    return text
 # ══════════════════════════════════════════════════════════════════════════════
 #  КОНФІГ
 # ══════════════════════════════════════════════════════════════════════════════
@@ -988,7 +993,7 @@ def gemini(prompt: str, style_idx: int | None = None) -> str | None:
         return None
     try:
         parts = r.json()["candidates"][0]["content"]["parts"]
-        return "".join(p.get("text","") for p in parts).strip()
+        return md_to_html("".join(p.get("text","") for p in parts).strip())
     except (KeyError, IndexError) as e:
         log.error(f"Gemini parse: {e}")
         return None
@@ -1360,7 +1365,11 @@ def process_queue(state: dict, queue: PriorityQueue):
             save_state(state)
 
     elif event.kind == "news":
-        text  = gen_news_post(d["news_list"], d["market"], d["fg"], is_critical)
+        text = gen_news_post(d["news_list"], d["market"], d["fg"], is_critical)
+            if text:
+                now_str = datetime.now(timezone.utc).strftime("%d.%m.%y %h:%m utc")
+                text = text.replace("час: 20.", f"час: {now_str}")
+                text = text.replace("**", "")
         image = make_market_chart(d["market"], d["fg"]) if text else None
         if text and publish(text, build_hashtags(event), image):
             state["seen_news"].append(d["news_hash"])
