@@ -376,11 +376,13 @@ def _classify_token(token: dict) -> int:
 
 def fetch_dexscreener() -> list[dict]:
     results = []
+    SEARCH_QUERIES = ["meme", "pepe", "dog", "cat", "ai", "trump"]
     chains = ["solana", "base", "ethereum", "bsc"]
     for chain in chains:
+      for query in SEARCH_QUERIES:
         r = http_get(
             f"https://api.dexscreener.com/latest/dex/search",
-            params={"q": "meme", "chainId": chain}
+            params={"q": query, "chainId": chain}
         )
         if not r:
             continue
@@ -742,7 +744,6 @@ def fetch_news() -> list[dict]:
         ("https://coindesk.com/arc/outboundfeeds/rss/", "CoinDesk"),
         ("https://decrypt.co/feed",                     "Decrypt"),
         ("https://thedefiant.io/feed",                  "The Defiant"),
-        ("https://bitcoinmagazine.com/.rss/full/",      "Bitcoin Magazine"),
         ("https://cryptobriefing.com/feed/",            "Crypto Briefing"),
     ]
     news = []
@@ -976,7 +977,7 @@ def _pick_style(override: int | None = None) -> str:
 
 def gemini(prompt: str, style_idx: int | None = None) -> str | None:
     url  = (f"https://generativelanguage.googleapis.com/v1beta/models/"
-            f"gemini-1.5-flash-latest:generateContent?key={GEMINI_API_KEY}")
+            f"gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}")
     body = {
         "system_instruction": {"parts": [{"text": _pick_style(style_idx)}]},
         "contents": [{"parts": [{"text": prompt}]}],
