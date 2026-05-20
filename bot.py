@@ -977,7 +977,7 @@ def _pick_style(override: int | None = None) -> str:
 
 def gemini(prompt: str, style_idx: int | None = None) -> str | None:
     url  = (f"https://generativelanguage.googleapis.com/v1beta/models/"
-            f"gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}")
+            f"gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}")
     body = {
         "system_instruction": {"parts": [{"text": _pick_style(style_idx)}]},
         "contents": [{"parts": [{"text": prompt}]}],
