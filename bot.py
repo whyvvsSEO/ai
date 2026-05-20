@@ -1366,10 +1366,10 @@ def process_queue(state: dict, queue: PriorityQueue):
 
     elif event.kind == "news":
         text = gen_news_post(d["news_list"], d["market"], d["fg"], is_critical)
-            if text:
-                now_str = datetime.now(timezone.utc).strftime("%d.%m.%y %h:%m utc")
-                text = text.replace("час: 20.", f"час: {now_str}")
-                text = text.replace("**", "")
+        if text:
+            now_str = datetime.now(timezone.utc).strftime("%d.%m.%Y %H:%M UTC")
+            text = text.replace("Час: 20.", f"Час: {now_str}")
+            text = text.replace("**", "")
         image = make_market_chart(d["market"], d["fg"]) if text else None
         if text and publish(text, build_hashtags(event), image):
             state["seen_news"].append(d["news_hash"])
